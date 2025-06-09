@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { User } from 'src/user/entities/user.entity';
 import { Reservation } from '../entities/reservation.entity';
 import { Exclude } from 'class-transformer';
