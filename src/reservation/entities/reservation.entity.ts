@@ -2,7 +2,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { User } from '../../user/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity()
 export class Reservation {
@@ -22,5 +28,6 @@ export class Reservation {
   userId: number;
 
   @ManyToOne(() => User, (user) => user.reservations)
+  @JoinColumn({ name: 'userId' })
   user: User;
 }

@@ -1,10 +1,14 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
+import { UserService } from '../user/user.service';
 
 @Controller('reservation')
 export class ReservationController {
-  constructor(private readonly reservationService: ReservationService) {}
+  constructor(
+    private readonly reservationService: ReservationService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post()
   create(@Body() createReservationDto: CreateReservationDto) {
@@ -13,7 +17,7 @@ export class ReservationController {
 
   @Get('user/:userId')
   findOne(@Param('userId') id: string) {
-    return this.reservationService.findOne(+id);
+    return this.userService.findOne(+id);
   }
 
   @Delete(':id')

@@ -14,6 +14,13 @@ export class UserService {
     return this.userRepository.save(createUserDto);
   }
 
+  findOne(id: number) {
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ['reservations'],
+    });
+  }
+
   findAll() {
     return this.userRepository.find({ relations: ['reservations'] });
   }
