@@ -1,45 +1,44 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
+import { Controller, Logger } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
-import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UserService } from '../user/user.service';
-import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller('reservation')
 export class ReservationController {
   constructor(
     private readonly reservationService: ReservationService,
     private readonly userService: UserService,
-    private readonly httpService: HttpService,
   ) {}
 
-  @Post()
-  async create(@Body() createReservationDto: CreateReservationDto) {
-    const bookId = createReservationDto.bookId;
-    const bookMsUrl = `http://localhost:3002/book/${bookId}`;
+  private readonly logger = new Logger(ReservationController.name);
 
-    const response = await firstValueFrom(this.httpService.get(bookMsUrl));
-    const bookStatus = response.data.status;
-    console.log(bookStatus);
-
-    if (bookStatus !== 'disponivel') {
-      throw new Error('Book não está disponível');
-    }
-    /*await firstValueFrom(
-      this.httpService.post(`http://localhost:3002/book/${bookId}/status`),
-    );*/
-    return this.reservationService.create(createReservationDto);
+  @MessagePattern('create-reservation')
+  async create(@Payload('body') body: any) {
+    this.logger.log(
+      `Received create-reservation message with data: ${JSON.stringify(body)}`,
+    );
+    const reservation = await this.reservationService.create(body);
+    return JSON.stringify(reservation);
   }
 
-  @Get('user/:userId')
-  findOne(@Param('userId') id: string) {
-    return this.userService.findOne(+id);
+  @MessagePattern('find-reservation')
+  findOne(@Payload('id') id: string) {
+    this.logger.log(
+      `Received find-reservation message with data: ${JSON.stringify(id)}`,
+    );
+    const reservation = this.userService.findOne(+id);
+    return JSON.stringify(reservation);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservationService.remove(+id);
+  @MessagePattern('delete-reservation')
+  remove(@Payload('id') id: string) {
+    this.logger.log(
+      `Received delete-reservation message with data: ${JSON.stringify(id)}`,
+    );
+    const reservation = this.reservationService.remove(+id);
+    return JSON.stringify(reservation);
   }
 }
