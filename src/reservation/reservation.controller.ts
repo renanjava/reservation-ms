@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import { Controller, Logger } from '@nestjs/common';
@@ -24,12 +23,12 @@ export class ReservationController {
     return JSON.stringify(reservation);
   }
 
-  @MessagePattern('find-reservation')
-  findOne(@Payload('id') id: string) {
+  @MessagePattern('find-user-reservation')
+  async findOne(@Payload('id') id: string) {
     this.logger.log(
-      `Received find-reservation message with data: ${JSON.stringify(id)}`,
+      `Received find-user-reservation message with data: ${JSON.stringify(id)}`,
     );
-    const reservation = this.userService.findOne(+id);
+    const reservation = await this.userService.findOne(+id);
     return JSON.stringify(reservation);
   }
 
